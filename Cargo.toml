@@ -1,7 +1,7 @@
 [package]
 name = "ergowallet-wasm"
 version = "0.1.0"
-authors = ["emeraldwallet.io"]
+authors = ["ergowallet.io"]
 edition = "2018"
 
 [lib]
@@ -14,12 +14,20 @@ default = ["console_error_panic_hook"]
 blake2 = "0.9"
 base58 = "0.1.0"
 wasm-bindgen = { version = "0.2.63", features = ["serde-serialize"] }
+web-sys = { version = "0.3.4" , features = ["console"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_derive = "1.0.80"
 hdpath = "0.2.0"
 
-#js-sys = "0.3.41"
+hmac = "0.8.1"
+sha2 = "0.9.1"
+pbkdf2 = "0.4.0"
+aes-gcm = "0.6.0"
+
+# used in elliptic-curve(in sigma-tree), compiled here with WASM support
+getrandom = {version = "0.1", features = ["wasm-bindgen"]}
+
 sigma-tree = { path = "../../sigma-rust/sigma-tree", features = ["with-serde"] }
 sigma-ser = { path = "../../sigma-rust/sigma-ser" }
 # The `console_error_panic_hook` crate provides better debugging of panics by
@@ -34,12 +42,6 @@ console_error_panic_hook = { version = "0.1.6", optional = true }
 #
 # Unfortunately, `wee_alloc` requires nightly Rust when targeting wasm for now.
 wee_alloc = { version = "0.4.5", optional = true }
-
-[dependencies.web-sys]
-version = "0.3.4"
-features = [
-  'console',
-]
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"
