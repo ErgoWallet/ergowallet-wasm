@@ -48,7 +48,6 @@ pub fn password_encrypt(
 
 #[wasm_bindgen]
 pub fn password_decrypt(password: &str, encrypted_data: &[u8]) -> Result<JsValue, JsValue> {
-
     // Extract meta information
     let salt = &encrypted_data[0..SALT_SIZE];
     let nonce = &encrypted_data[SALT_SIZE..(SALT_SIZE + NONCE_SIZE)];
@@ -68,7 +67,6 @@ pub fn password_decrypt(password: &str, encrypted_data: &[u8]) -> Result<JsValue
     match result {
         Ok(decrypted) =>
             JsValue::from_serde(&decrypted).map_err(|e| JsValue::from_str(&format!("{:?}", e))),
-        Err(_) =>
-            Err(JsValue::from_str("Cannot decrypt the data"))
+        Err(err) => Err(JsValue::from_str(&format!("Cannot encrypt the data: {:?}", err)))
     }
 }
