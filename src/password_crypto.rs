@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::*;
 
 use hmac::Hmac;
 use pbkdf2::pbkdf2;
-use sha2::{Sha256, Sha512};
+use sha2::{Sha512};
 use aes_gcm::Aes256Gcm;
 use aes_gcm::aead::{Aead, NewAead, generic_array::GenericArray, AeadMut};
 

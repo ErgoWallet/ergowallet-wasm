@@ -1,23 +1,25 @@
-mod password_crypto;
-mod utils;
+#[macro_use]
+extern crate serde_derive;
 
+use std::convert::TryFrom;
+
+use hdpath::StandardHDPath;
+use sigma_tree::{chain, ErgoTree};
+use sigma_tree::chain::{Base16EncodedBytes, Contract, Input, TokenAmount, TokenId};
+use sigma_tree::serialization::*;
+use sigma_tree::serialization::serializable::*;
+use sigma_tree::sigma_protocol;
+use sigma_tree::sigma_protocol::sigma_boolean::ProveDlog;
 use wasm_bindgen::prelude::*;
 use web_sys::console;
 
-use sigma_tree::chain::{Base16EncodedBytes, Contract, Input};
-use sigma_tree::serialization::serializable::*;
-use sigma_tree::serialization::*;
-use sigma_tree::sigma_protocol;
-use sigma_tree::sigma_protocol::sigma_boolean::ProveDlog;
-use sigma_tree::{chain, ErgoTree};
-
-use hdpath::StandardHDPath;
-use std::convert::TryFrom;
-
+pub use address::*;
 pub use password_crypto::*;
+use sigma_tree::chain::register::NonMandatoryRegisters;
 
-#[macro_use]
-extern crate serde_derive;
+mod address;
+mod password_crypto;
+mod utils;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -28,41 +30,6 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 const MINER_ERGO_TREE: &str = "1005040004000e36100204a00b08cd0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ea02d192a39a8cc7a701730073011001020402d19683030193a38cc7b2a57300000193c2b2a57301007473027303830108cdeeac93b1a57304";
 const ABSOLUTE_MIN_GAP_LIMIT: i32 = 21;
 
-#[wasm_bindgen]
-pub struct Address {
-    address: String,
-}
-
-#[wasm_bindgen]
-impl Address {
-    pub fn get_addr(&self) -> String {
-        return self.address.clone();
-    }
-
-    pub fn validate(address: &str) -> String {
-        let encoder = chain::AddressEncoder::new(chain::NetworkPrefix::Mainnet);
-        let result = encoder.parse_address_from_str(address);
-        match result {
-            Ok(addr) => String::new(),
-            Err(err) => format!("{}", err),
-        }
-    }
-
-    pub fn from_public_key(pub_key: &[u8]) -> Address {
-        let mut content_bytes: Vec<u8> = vec![];
-        content_bytes.extend_from_slice(pub_key);
-
-        let p2pk_address: chain::Address =
-            chain::Address::P2PK(ProveDlog::sigma_parse_bytes(content_bytes).unwrap());
-
-        let encoder = chain::AddressEncoder::new(chain::NetworkPrefix::Mainnet);
-        encoder.address_to_str(&p2pk_address);
-
-        Address {
-            address: encoder.address_to_str(&p2pk_address),
-        }
-    }
-}
 
 #[wasm_bindgen]
 pub struct KeyManager {}
@@ -77,9 +44,17 @@ impl KeyManager {
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct AssetValue {
+    #[serde(rename = "tokenId")]
+    pub token_id: String,
+    pub amount: String
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct TxOutput {
     pub value: String,
     pub address: String,
+    pub assets: Vec<AssetValue>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -100,7 +75,7 @@ pub fn create_tx(
     outputs: Box<[JsValue]>,
     fee_amount: u64,
     height: u32,
-) -> JsValue {
+) -> Result<JsValue, JsValue> {
     let inputs_from_js: Vec<TxInput> = inputs
         .into_iter()
         .map(|x| x.into_serde().unwrap())
@@ -139,11 +114,25 @@ pub fn create_tx(
             let contract = chain::Contract::pay_to_address(addr).unwrap();
 
             let val = x.value.parse::<u64>().unwrap();
-            return chain::ErgoBoxCandidate::new(
-                chain::box_value::BoxValue::new(val).unwrap(),
-                contract.get_ergo_tree(),
-                height,
-            );
+
+            // tokens
+            let tokens = x.assets.iter().map(|t| {
+                let id_bytes = chain::Base16DecodedBytes::try_from(t.token_id.clone()).unwrap();
+                let digest = chain::Digest32::try_from(id_bytes).unwrap();
+                chain::TokenAmount {
+                    token_id: TokenId(digest),
+                    amount: t.amount.parse::<u64>().unwrap()
+                }
+            }).collect();
+
+            chain::ErgoBoxCandidate {
+                value: chain::box_value::BoxValue::new(val).unwrap(),
+                ergo_tree: contract.get_ergo_tree(),
+                tokens,
+                additional_registers: NonMandatoryRegisters::empty(),
+                creation_height: height,
+            }
+
         })
         .collect();
 
@@ -161,7 +150,7 @@ pub fn create_tx(
     // create transaction
     let tx = chain::Transaction::new(_inputs, vec![], _outputs);
 
-    JsValue::from_serde(&tx).unwrap()
+    Ok(JsValue::from_serde(&tx).unwrap())
 }
 
 #[wasm_bindgen]
@@ -179,9 +168,10 @@ pub fn parse_hd_path(path: &str) -> Vec<u32> {
 
 #[cfg(test)]
 mod tests {
-    use sigma_tree::serialization::serializable::*;
-    use sigma_tree::{chain, ErgoTree};
     use std::convert::TryFrom;
+
+    use sigma_tree::{chain, ErgoTree};
+    use sigma_tree::serialization::serializable::*;
     use wasm_bindgen::JsValue;
 
     #[test]

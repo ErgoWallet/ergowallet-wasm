@@ -35,6 +35,10 @@ pub fn tx_creation() {
     ];
 
     let outputs: Vec<TxOutput> = vec![TxOutput {
+        assets: vec![AssetValue {
+            token_id: "626925e6a7bb08e3b7cf73de2e71a98966e881e7fc0c54fbbc94b83c79de8c19".to_string(),
+            amount: "1".to_string()
+        }],
         value: "334412".to_string(),
         address: "9hzP24a2q8KLPVCUk7gdMDXYc7vinmGuxmLp5KU7k9UwptgYBYV".to_string(),
     }];
@@ -51,7 +55,7 @@ pub fn tx_creation() {
         .collect::<Vec<JsValue>>()
         .into_boxed_slice();
 
-    let result = create_tx(js_value, js_outputs, 100u64, 0);
+    let result = create_tx(js_value, js_outputs, 100u64, 0).unwrap();
 
     // let s = format!("{:?}", result);
 
