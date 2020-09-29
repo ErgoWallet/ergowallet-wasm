@@ -1,13 +1,15 @@
 # Ergo Wallet WASM module
 
+This is key part of [Ergo Desktop Wallet](https://ergowallet.io)
+
 ## Build
 ```
-wasm-pack build --target nodejs
+yarn build
 
 ```
 
 ## Tests
 ```
-wasm-pack test --node
+yarn test
 
 ```

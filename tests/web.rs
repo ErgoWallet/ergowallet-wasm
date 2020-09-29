@@ -4,7 +4,6 @@
 
 extern crate wasm_bindgen_test;
 
-use sigma_tree::chain::ErgoBoxCandidate;
 use sigma_tree::serialization::serializable::*;
 use sigma_tree::sigma_protocol::DlogProverInput;
 use wasm_bindgen::JsValue;
@@ -12,6 +11,9 @@ use wasm_bindgen_test::*;
 use web_sys::console;
 
 use ergowallet_wasm::*;
+use sigma_tree::chain::contract::Contract;
+use sigma_tree::chain::address::{NetworkPrefix, AddressEncoder};
+use sigma_tree::chain::ergo_box::box_value::BoxValue;
 
 //wasm_bindgen_test_configure!(run_in_browser);
 
@@ -39,7 +41,7 @@ pub fn tx_creation() {
             token_id: "626925e6a7bb08e3b7cf73de2e71a98966e881e7fc0c54fbbc94b83c79de8c19".to_string(),
             amount: "1".to_string()
         }],
-        value: "334412".to_string(),
+        value: BoxValue::SAFE_USER_MIN.as_u64().to_string(),
         address: "9hzP24a2q8KLPVCUk7gdMDXYc7vinmGuxmLp5KU7k9UwptgYBYV".to_string(),
     }];
 
@@ -55,7 +57,7 @@ pub fn tx_creation() {
         .collect::<Vec<JsValue>>()
         .into_boxed_slice();
 
-    let result = create_tx(js_value, js_outputs, 100u64, 0).unwrap();
+    let result = create_tx(js_value, js_outputs, BoxValue::SAFE_USER_MIN.as_u64(), 0).unwrap();
 
     // let s = format!("{:?}", result);
 
@@ -66,12 +68,12 @@ pub fn tx_creation() {
 
 #[wasm_bindgen_test]
 pub fn ergo_tree_p2pk_serialization() {
-    let encoder = sigma_tree::chain::AddressEncoder::new(sigma_tree::chain::NetworkPrefix::Mainnet);
+    let encoder = AddressEncoder::new(NetworkPrefix::Mainnet);
     let address = encoder
         .parse_address_from_str("9grLsBktkgPuNWAHH4QTb5GPxL4eH5mFgwqcLaUaMWkU9R7ZqKu")
         .unwrap();
 
-    let contract = sigma_tree::chain::Contract::pay_to_address(address).unwrap();
+    let contract = Contract::pay_to_address(&address).unwrap();
     let tree_bytes = contract.get_ergo_tree().sigma_serialise_bytes();
 
     let correct_tree = vec![

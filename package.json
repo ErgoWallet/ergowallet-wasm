@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "build": "wasm-pack build --target nodejs --scope ergowallet",
+    "test": "wasm-pack test --node"
+  }
+}

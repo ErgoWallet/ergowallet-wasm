@@ -1,6 +1,6 @@
 [package]
 name = "ergowallet-wasm"
-version = "0.1.0"
+version = "0.1.2"
 authors = ["ergowallet.io"]
 edition = "2018"
 
@@ -19,6 +19,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_derive = "1.0.80"
 hdpath = "0.2.0"
+k256 = {version = "0.4.2", features = ["rand", "zeroize"]}
 
 hmac = "0.8.1"
 sha2 = "0.9.1"

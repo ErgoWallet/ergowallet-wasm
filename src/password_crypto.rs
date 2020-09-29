@@ -4,7 +4,7 @@ use hmac::Hmac;
 use pbkdf2::pbkdf2;
 use sha2::{Sha512};
 use aes_gcm::Aes256Gcm;
-use aes_gcm::aead::{Aead, NewAead, generic_array::GenericArray, AeadMut};
+use aes_gcm::aead::{Aead, NewAead, generic_array::GenericArray};
 
 const SALT_SIZE: usize = 32;
 const NONCE_SIZE: usize = 12;

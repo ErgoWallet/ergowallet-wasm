@@ -1,9 +1,8 @@
-use sigma_tree::{chain, ErgoTree};
+use sigma_tree::{chain};
 use sigma_tree::serialization::*;
-use sigma_tree::serialization::serializable::*;
 use sigma_tree::sigma_protocol::sigma_boolean::ProveDlog;
 use wasm_bindgen::prelude::*;
-
+use sigma_tree::chain::address::{AddressEncoder, NetworkPrefix};
 
 #[wasm_bindgen]
 pub struct Address {
@@ -16,12 +15,12 @@ impl Address {
         return self.address.clone();
     }
 
-    pub fn validate(address: &str) -> String {
-        let encoder = chain::AddressEncoder::new(chain::NetworkPrefix::Mainnet);
+    pub fn validate(address: &str) -> bool {
+        let encoder = AddressEncoder::new(NetworkPrefix::Mainnet);
         let result = encoder.parse_address_from_str(address);
         match result {
-            Ok(addr) => String::new(),
-            Err(err) => format!("{}", err),
+            Ok(_addr) => true,
+            Err(_err) => false,
         }
     }
 
@@ -29,14 +28,25 @@ impl Address {
         let mut content_bytes: Vec<u8> = vec![];
         content_bytes.extend_from_slice(pub_key);
 
-        let p2pk_address: chain::Address =
-            chain::Address::P2PK(ProveDlog::sigma_parse_bytes(content_bytes).unwrap());
-
-        let encoder = chain::AddressEncoder::new(chain::NetworkPrefix::Mainnet);
-        encoder.address_to_str(&p2pk_address);
-
+        let p2pk_address =
+            chain::address::Address::P2PK(ProveDlog::sigma_parse_bytes(content_bytes).unwrap());
+        let encoder = AddressEncoder::new(NetworkPrefix::Mainnet);
         Address {
             address: encoder.address_to_str(&p2pk_address),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::convert::TryFrom;
+    use sigma_tree::{chain, ErgoTree};
+    use sigma_tree::serialization::serializable::*;
+    use wasm_bindgen::JsValue;
+
+    #[test]
+    pub fn address_validation() {
+        let result = super::Address::validate(&"we");
+        assert!(result);
     }
 }
