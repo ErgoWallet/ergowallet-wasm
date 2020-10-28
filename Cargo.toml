@@ -1,6 +1,6 @@
 [package]
 name = "ergowallet-wasm"
-version = "0.1.2"
+version = "0.2.0"
 authors = ["ergowallet.io"]
 edition = "2018"
 
@@ -13,13 +13,14 @@ default = ["console_error_panic_hook"]
 [dependencies]
 blake2 = "0.9"
 base58 = "0.1.0"
-wasm-bindgen = { version = "0.2.63", features = ["serde-serialize"] }
-web-sys = { version = "0.3.4" , features = ["console"] }
+wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
+web-sys = { version = "0.3.4", features = ["console"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_derive = "1.0.80"
-hdpath = "0.2.0"
-k256 = {version = "0.4.2", features = ["rand", "zeroize"]}
+hdpath = { version = "0.3.1" }
+k256 = { version = "0.4.2", features = ["rand", "zeroize"] }
+generic-array = "0.14.4"
 
 hmac = "0.8.1"
 sha2 = "0.9.1"
@@ -27,10 +28,14 @@ pbkdf2 = "0.4.0"
 aes-gcm = "0.6.0"
 
 # used in elliptic-curve(in sigma-tree), compiled here with WASM support
-getrandom = {version = "0.1", features = ["wasm-bindgen"]}
+getrandom = { version = "0.1", features = ["wasm-bindgen"] }
 
-sigma-tree = { path = "../../sigma-rust/sigma-tree", features = ["with-serde"] }
-sigma-ser = { path = "../../sigma-rust/sigma-ser" }
+# sigma-tree = { path = "../../sigma-rust/sigma-tree", features = ["with-serde"] }
+# sigma-ser = { path = "../../sigma-rust/sigma-ser" }
+
+# ergo-lib = "0.2.0"
+ergo-lib = { path = "../../sigma-rust/ergo-lib" }
+
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
 # all the `std::fmt` and `std::panicking` infrastructure, so isn't great for

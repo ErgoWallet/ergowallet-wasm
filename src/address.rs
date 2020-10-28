@@ -1,8 +1,9 @@
-use sigma_tree::{chain};
-use sigma_tree::serialization::*;
-use sigma_tree::sigma_protocol::sigma_boolean::ProveDlog;
 use wasm_bindgen::prelude::*;
-use sigma_tree::chain::address::{AddressEncoder, NetworkPrefix};
+
+use ergo_lib::chain::address::{AddressEncoder, NetworkPrefix};
+use ergo_lib::sigma_protocol::sigma_boolean::ProveDlog;
+use ergo_lib::serialization::SigmaSerializable;
+use ergo_lib::chain;
 
 #[wasm_bindgen]
 pub struct Address {
@@ -40,8 +41,6 @@ impl Address {
 #[cfg(test)]
 mod tests {
     use std::convert::TryFrom;
-    use sigma_tree::{chain, ErgoTree};
-    use sigma_tree::serialization::serializable::*;
     use wasm_bindgen::JsValue;
 
     #[test]

@@ -8,7 +8,7 @@ pub struct KeyManager {}
 
 #[wasm_bindgen]
 impl KeyManager {
-    pub fn recover(mnemonic: &str) -> KeyManager {
+    pub fn recover(_mnemonic: &str) -> KeyManager {
         console::log_1(&"Recovering KeyManager from mnemonic phrase".into());
 
         return KeyManager {};

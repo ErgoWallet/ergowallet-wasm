@@ -11,7 +11,7 @@ const NONCE_SIZE: usize = 12;
 const KEY_SIZE: usize = 32;
 const ROUNDS: u32 = 10_000;
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = "passwordEncrypt")]
 pub fn password_encrypt(
     password: &str,
     salt: &[u8],
@@ -46,7 +46,7 @@ pub fn password_encrypt(
     }
 }
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = "passwordDecrypt")]
 pub fn password_decrypt(password: &str, encrypted_data: &[u8]) -> Result<JsValue, JsValue> {
     // Extract meta information
     let salt = &encrypted_data[0..SALT_SIZE];
