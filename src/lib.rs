@@ -12,6 +12,10 @@ pub use key_manager::*;
 pub use password_crypto::*;
 pub use transaction::*;
 
+use ergo_lib::sigma_protocol::DlogProverInput;
+use ergo_lib::wallet::secret_key::SecretKey;
+use ergo_lib::serialization::SigmaSerializable;
+use ergo_lib::chain::Base16DecodedBytes;
 
 mod key_manager;
 mod address;
@@ -41,6 +45,14 @@ pub fn parse_hd_path(path: &str) -> Vec<u32> {
         hd_path.change(),
         hd_path.index(),
     ]
+}
+
+#[wasm_bindgen(js_name = "publicFromSecret")]
+pub fn public_from_secret(secret: &str) -> Vec<u8> {
+    let scalar_bytes = Base16DecodedBytes::try_from(secret.to_string()).unwrap();
+    let bytes: &[u8; 32] = scalar_bytes.0.as_slice().try_into().unwrap();
+
+    DlogProverInput::from_bytes(bytes).unwrap().public_image().h.sigma_serialize_bytes()
 }
 
 #[cfg(test)]

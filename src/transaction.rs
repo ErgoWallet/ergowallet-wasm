@@ -95,6 +95,11 @@ impl Transaction {
         fee_amount: u64,
         height: u32,
     ) -> Result<UnsignedTransaction, JsValue> {
+        let fee = match BoxValue::try_from(fee_amount) {
+            Ok(val) => val,
+            Err(err) => return Err(JsValue::from_str(&format!("Wrong fee amount: {:?}", err)))
+        };
+
         let inputs_from_js: Vec<TxInput> = inputs
             .into_iter()
             .map(|x| x.into_serde().unwrap())
