@@ -8,17 +8,15 @@ use wasm_bindgen_test::*;
 use web_sys::console;
 
 use ergowallet_wasm::*;
-use ergo_lib::sigma_protocol::DlogProverInput;
 use ergo_lib::wallet::secret_key::SecretKey;
 use ergo_lib::chain::Base16EncodedBytes;
 use ergo_lib::chain::ergo_box::{ErgoBox, ErgoBoxCandidate};
-use ergo_lib::chain::ergo_box::box_value::BoxValue;
+use ergo_lib::chain::ergo_box::BoxValue;
 use ergo_lib::chain::contract::Contract;
-use ergo_lib::chain::ergo_box::register::NonMandatoryRegisters;
-use ergo_lib::chain::transaction::TxId;
-use ergo_lib::chain::context_extension::ContextExtension;
-use ergo_lib::chain::prover_result::{ProofBytes, ProverResult};
-use ergo_lib::chain::input::{Input, UnsignedInput};
+use ergo_lib::chain::ergo_box::NonMandatoryRegisters;
+use ergo_lib::chain::transaction::{TxId, UnsignedInput};
+use ergo_lib::ergotree_interpreter::sigma_protocol::private_input::DlogProverInput;
+use ergo_lib::ergotree_interpreter::sigma_protocol::prover::ContextExtension;
 
 
 #[wasm_bindgen_test]

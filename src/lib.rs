@@ -12,10 +12,10 @@ pub use key_manager::*;
 pub use password_crypto::*;
 pub use transaction::*;
 
-use ergo_lib::sigma_protocol::DlogProverInput;
 use ergo_lib::wallet::secret_key::SecretKey;
-use ergo_lib::serialization::SigmaSerializable;
 use ergo_lib::chain::Base16DecodedBytes;
+use ergo_lib::ergotree_interpreter::sigma_protocol::private_input::DlogProverInput;
+use ergo_lib::ergotree_ir::serialization::SigmaSerializable;
 
 mod key_manager;
 mod address;
@@ -61,11 +61,11 @@ mod tests {
 
     use ergo_lib::chain::transaction::Transaction;
     use ergo_lib::chain::ergo_box::ErgoBoxCandidate;
-    use ergo_lib::chain::ergo_box::box_value::BoxValue;
-    use ergo_lib::chain::ergo_box::register::NonMandatoryRegisters;
-    use ergo_lib::ErgoTree;
-    use ergo_lib::serialization::SigmaSerializable;
+    use ergo_lib::chain::ergo_box::BoxValue;
+    use ergo_lib::chain::ergo_box::NonMandatoryRegisters;
     use ergo_lib::chain::Base16DecodedBytes;
+    use ergo_lib::ergotree_ir::ergo_tree::ErgoTree;
+    use ergo_lib::ergotree_ir::serialization::SigmaSerializable;
 
     fn create_output(value: u64, ergo_tree: &str, height: u32) -> ErgoBoxCandidate {
         let ergo_tree_bytes = Base16DecodedBytes::try_from(ergo_tree.to_string()).unwrap();

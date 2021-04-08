@@ -2,29 +2,23 @@ use wasm_bindgen::prelude::*;
 
 use std::convert::{TryFrom, TryInto};
 
-use ergo_lib::chain::address::{AddressEncoder, NetworkPrefix};
-use ergo_lib::chain::context_extension::ContextExtension;
 use ergo_lib::chain::contract::Contract;
-use ergo_lib::chain::ergo_box::box_id::BoxId;
-use ergo_lib::chain::ergo_box::box_value::BoxValue;
-use ergo_lib::chain::ergo_box::register::NonMandatoryRegisters;
+use ergo_lib::chain::ergo_box::BoxId;
+use ergo_lib::chain::ergo_box::BoxValue;
+use ergo_lib::chain::ergo_box::NonMandatoryRegisters;
 use ergo_lib::chain::ergo_box::{ErgoBox, ErgoBoxCandidate};
 use ergo_lib::chain::ergo_state_context::ErgoStateContext;
-use ergo_lib::chain::input::{Input, UnsignedInput};
-use ergo_lib::chain::prover_result::{ProofBytes, ProverResult};
 use ergo_lib::chain::token::{TokenAmount, TokenId, Token};
-use ergo_lib::serialization::SigmaSerializable;
-use ergo_lib::sigma_protocol::prover::TestProver;
-use ergo_lib::sigma_protocol::{DlogProverInput, PrivateInput};
-use ergo_lib::wallet::signing::sign_transaction;
-use ergo_lib::{chain, ErgoTree};
+use ergo_lib::wallet::signing::{sign_transaction, TransactionContext};
 use ergo_lib::chain::Digest32;
 use ergo_lib::chain::Base16DecodedBytes;
-
 use k256::Scalar;
-// use elliptic_curve::FromBytes;
-
 use crate::{MINER_ERGO_TREE, MINERS_FEE_MAINNET_ADDRESS};
+use ergo_lib::ergotree_ir::address::{AddressEncoder, NetworkPrefix};
+use ergo_lib::chain::transaction::UnsignedInput;
+use ergo_lib::ergotree_interpreter::sigma_protocol::prover::{ContextExtension, TestProver};
+use ergo_lib::ergotree_interpreter::sigma_protocol::private_input::{PrivateInput, DlogProverInput};
+use ergo_lib::chain;
 
 
 #[derive(Serialize, Deserialize)]
@@ -200,13 +194,15 @@ impl Transaction {
 
         // 2. Construct unsigned transaction
         let unsigned: chain::transaction::unsigned::UnsignedTransaction = tx.into_serde().unwrap();
-
+        let tx_context = TransactionContext {
+            spending_tx: unsigned,
+            boxes_to_spend,
+            data_boxes: vec![]
+        };
 
         let res = sign_transaction(
             &prover,
-            unsigned,
-            boxes_to_spend.as_slice(),
-            vec![].as_slice(),
+            tx_context,
             &ErgoStateContext::dummy(),
         )
         .map_err(|e| JsValue::from_str(&format!("{}", e)))

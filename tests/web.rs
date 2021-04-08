@@ -10,11 +10,11 @@ use wasm_bindgen_test::*;
 use web_sys::console;
 
 use ergowallet_wasm::*;
-use ergo_lib::sigma_protocol::DlogProverInput;
-use ergo_lib::chain::ergo_box::box_value::BoxValue;
-use ergo_lib::chain::address::{AddressEncoder, NetworkPrefix};
+use ergo_lib::chain::ergo_box::BoxValue;
 use ergo_lib::chain::contract::Contract;
-use ergo_lib::serialization::*;
+use ergo_lib::ergotree_ir::serialization::SigmaSerializable;
+use ergo_lib::ergotree_ir::address::{AddressEncoder, NetworkPrefix};
+use ergo_lib::ergotree_interpreter::sigma_protocol::private_input::DlogProverInput;
 
 
 //wasm_bindgen_test_configure!(run_in_browser);

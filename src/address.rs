@@ -1,9 +1,13 @@
 use wasm_bindgen::prelude::*;
 
-use ergo_lib::chain::address::{AddressEncoder, NetworkPrefix};
-use ergo_lib::sigma_protocol::sigma_boolean::ProveDlog;
-use ergo_lib::serialization::SigmaSerializable;
+// use ergo_lib::chain::address::{AddressEncoder, NetworkPrefix};
+// use ergo_lib::sigma_protocol::sigma_boolean::ProveDlog;
+// use ergo_lib::serialization::SigmaSerializable;
 use ergo_lib::chain;
+use ergo_lib::ergotree_ir::sigma_protocol::sigma_boolean::ProveDlog;
+use ergo_lib::ergotree_ir::address::{NetworkPrefix, AddressEncoder};
+use ergo_lib::ergotree_ir::serialization::SigmaSerializable;
+use ergo_lib::ergotree_ir::address::AddressTypePrefix::P2PK;
 
 #[wasm_bindgen]
 pub struct Address {
@@ -29,8 +33,7 @@ impl Address {
         let mut content_bytes: Vec<u8> = vec![];
         content_bytes.extend_from_slice(pub_key);
 
-        let p2pk_address =
-            chain::address::Address::P2PK(ProveDlog::sigma_parse_bytes(content_bytes).unwrap());
+        let p2pk_address = ergo_lib::ergotree_ir::address::Address::P2PK(ProveDlog::sigma_parse_bytes(content_bytes).unwrap());
         let encoder = AddressEncoder::new(NetworkPrefix::Mainnet);
         Address {
             address: encoder.address_to_str(&p2pk_address),

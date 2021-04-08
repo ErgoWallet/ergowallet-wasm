@@ -1,6 +1,6 @@
 [package]
 name = "ergowallet-wasm"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["ergowallet.io"]
 edition = "2018"
 
@@ -30,11 +30,7 @@ aes-gcm = "0.6.0"
 # used in elliptic-curve(in sigma-tree), compiled here with WASM support
 getrandom = { version = "0.1", features = ["wasm-bindgen"] }
 
-# sigma-tree = { path = "../../sigma-rust/sigma-tree", features = ["with-serde"] }
-# sigma-ser = { path = "../../sigma-rust/sigma-ser" }
-
-# ergo-lib = "0.2.0"
-ergo-lib = { path = "../../sigma-rust/ergo-lib" }
+ergo-lib = "0.8.0"
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
